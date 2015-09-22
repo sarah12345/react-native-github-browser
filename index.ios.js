@@ -7,13 +7,14 @@
 var React = require('react-native');
 var Login = require('./login');
 var {
+  Component,
   AppRegistry,
   StyleSheet,
   Text,
   View,
 } = React;
 
-class GithubBrowser extends React.Component{
+class GithubBrowser extends Component{
   render() {
     return (
       <Login />

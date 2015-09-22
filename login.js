@@ -3,6 +3,8 @@
 var React = require('react-native');
 
 var {
+  ActivityIndicatorIOS,
+  Component,
   Image,
   Text,
   TextInput,
@@ -11,7 +13,14 @@ var {
   View
 } = React;
 
-class Login extends React.Component{
+class Login extends Component{
+  constructor(props) {
+    super(props);
+    this.state = {showProgress: false};
+  }
+  onLoginPressed() {
+    this.setState({showProgress: true});
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -20,17 +29,25 @@ class Login extends React.Component{
         <Text style={styles.heading}>
           Github Browser
         </Text>
-        <TextInput style={styles.input}
+        <TextInput
+          onChangeText={(text)=> this.setState({username: text})}
+          style={styles.input}
           placeholder="Github username" />
         <TextInput style={styles.input}
+          onChangeText={(text)=> this.setState({password: text})}
           placeholder="Github password"
           secureTextEntry="true" />
         <TouchableHighlight
+          onPress={this.onLoginPressed.bind(this)}
           style={styles.button}>
           <Text style={styles.buttonText}>
             Log In
           </Text>
         </TouchableHighlight>
+        <ActivityIndicatorIOS
+          style={styles.spinner}
+          animating={this.state.showProgress}
+          size="large" />
       </View>
     );
   }
@@ -71,7 +88,10 @@ var styles = StyleSheet.create({
     fontSize: 22,
     color: '#fff',
     alignSelf: 'center',
-  }
+  },
+  spinner: {
+    marginTop: 20
+  },
 });
 
 module.exports = Login;
