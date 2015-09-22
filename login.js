@@ -17,28 +17,54 @@ var {
 class Login extends Component{
   constructor(props) {
     super(props);
-    this.state = {showProgress: false};
+    this.state = { showProgress: false, };
   }
   onLoginPressed() {
     this.setState({showProgress: true});
-
     var buffer = new Buffer.Buffer(this.state.username + ':' + this.state.password);
     var encodedAuth = buffer.toString('base64');
 
-
     fetch('https://api.github.com/user', {
        headers: {'Authorization' : 'Basic ' + encodedAuth}
-      }
-    )
+      })
+      .then((response)=> {
+        if (response.status >= 200 && response.status < 300) {
+          return response;
+        }
+        throw {
+          badCredentials: response.status == 401,
+          unknownError: response.status != 401
+        }
+      })
       .then((response)=> {
         return response.json();
       })
       .then((results)=> {
         console.log(results);
+        this.setState({
+          showProgress: false,
+          success: true
+        });
+      })
+      .catch((error)=> {
+        this.setState(error)
+      })
+      .finally(()=> {
         this.setState({showProgress: false});
       });
   }
   render() {
+    var errorMessage = <View />;
+    if (!this.state.success && this.state.badCredentials) {
+       errorMessage = <Text style={styles.error}>
+        Username or password was incorrect.
+      </Text>;
+    }
+    if (!this.state.success && this.state.unknownError) {
+      errorMessage = <Text style={styles.error}>
+        An error occurred.
+      </Text>;
+    }
     return (
       <View style={styles.container}>
         <Image style={styles.logo}
@@ -53,7 +79,7 @@ class Login extends Component{
         <TextInput style={styles.input}
           onChangeText={(text)=> this.setState({password: text})}
           placeholder="Github password"
-          secureTextEntry="true" />
+          secureTextEntry={true} />
         <TouchableHighlight
           onPress={this.onLoginPressed.bind(this)}
           style={styles.button}>
@@ -61,6 +87,7 @@ class Login extends Component{
             Log In
           </Text>
         </TouchableHighlight>
+        {errorMessage}
         <ActivityIndicatorIOS
           style={styles.spinner}
           animating={this.state.showProgress}
@@ -109,6 +136,10 @@ var styles = StyleSheet.create({
   spinner: {
     marginTop: 20
   },
+  error: {
+    color: 'red',
+    paddingTop: 20
+  }
 });
 
 module.exports = Login;
