@@ -1,6 +1,7 @@
 'use strict';
 
 var React = require('react-native');
+var Buffer = require('buffer');
 
 var {
   ActivityIndicatorIOS,
@@ -20,7 +21,15 @@ class Login extends Component{
   }
   onLoginPressed() {
     this.setState({showProgress: true});
-    fetch('https://api.github.com/search/repositories?q=react')
+
+    var buffer = new Buffer.Buffer(this.state.username + ':' + this.state.password);
+    var encodedAuth = buffer.toString('base64');
+
+
+    fetch('https://api.github.com/user', {
+       headers: {'Authorization' : 'Basic ' + encodedAuth}
+      }
+    )
       .then((response)=> {
         return response.json();
       })
