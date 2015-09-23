@@ -15,13 +15,25 @@ var {
 } = React;
 
 class GithubBrowser extends Component{
+  constructor() {
+    super();
+    this.state = { isLoggedIn: false }
+  }
   render() {
-    return (
-      <Login onLogin={this.onLogin} />
-    );
+    if (this.state.isLoggedIn) {
+      return (
+        <View style={styles.container}>
+          <Text style={styles.welcome}>Welcome!</Text>
+        </View>
+      );
+    } else {
+      return (
+       <Login onLogin={this.onLogin.bind(this)} />
+      );
+    }
   }
   onLogin() {
-    console.log('success');
+    this.setState({isLoggedIn: true});
   }
 };
 
