@@ -17,8 +17,11 @@ var {
 class GithubBrowser extends Component{
   render() {
     return (
-      <Login />
+      <Login onLogin={this.onLogin} />
     );
+  }
+  onLogin() {
+    console.log('success');
   }
 };
 
